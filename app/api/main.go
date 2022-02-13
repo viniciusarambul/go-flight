@@ -7,8 +7,6 @@ import (
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
-	repository2 "github.com/viniciusarambul/go-flight/app/infrastructure/repository"
-	service2 "github.com/viniciusarambul/go-flight/app/usecase/plane"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,15 +17,26 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	repository := repository2.PlaneMySQLRepository{Db: db}
-	service := service2.ListPlanes{Repository: repository}
+	var id string
+	var model string
+	err2 := db.QueryRow("select id, model from planes where id = 1").Scan(&id, &model)
 
-	output, err := service.Exec()
-	if err != nil {
-		fmt.Println("error: ", err)
-	} else {
-		fmt.Println("else:", output)
+	if err2 != nil {
+		log.Fatal(err2)
 	}
+
+	fmt.Println(id, model)
+
+	/*
+		repository := repository2.PlaneMySQLRepository{Db: db}
+		service := service2.ListPlanes{Repository: repository}
+
+		output, err := service.Exec()
+		if err != nil {
+			fmt.Println("error: ", err)
+		} else {
+			fmt.Println("else:", output)
+		}*/
 }
 func main() {
 
