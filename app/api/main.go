@@ -1,45 +1,34 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
 	"net/http"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/gin-gonic/gin"
+	"github.com/viniciusarambul/go-flight/app/api/handler"
+	"github.com/viniciusarambul/go-flight/app/api/presenter"
+	"github.com/viniciusarambul/go-flight/app/infrastructure/repository"
+	"github.com/viniciusarambul/go-flight/app/usecase/plane"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	//w.Header().Set("Content-Type", "application/json")
-
-	db, err := sql.Open("mysql", "root:root@tcp(docker.for.mac.localhost:3306)/goflight")
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	var id string
-	var model string
-	err2 := db.QueryRow("select id, model from planes where id = 1").Scan(&id, &model)
-
-	if err2 != nil {
-		log.Fatal(err2)
-	}
-
-	fmt.Println(id, model)
-
-	/*
-		repository := repository2.PlaneMySQLRepository{Db: db}
-		service := service2.ListPlanes{Repository: repository}
-
-		output, err := service.Exec()
-		if err != nil {
-			fmt.Println("error: ", err)
-		} else {
-			fmt.Println("else:", output)
-		}*/
-}
 func main() {
+	engine := gin.Default()
 
-	http.HandleFunc("/", indexHandler)
-	http.ListenAndServe(":8080", nil)
+	engine.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"data": "estamos on"})
+	})
+	dsn := "root:root@tcp(docker.for.mac.localhost:3306)/goflight?&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("errou")
+	}
+
+	planeRepository := repository.NewPlaneMySQLRepository(db)
+	planePresenter := presenter.NewPlanePresenter()
+	planeUseCase := plane.NewPlaneUseCase(planeRepository, planePresenter)
+
+	handler.NewPlaneHandler(engine, planeUseCase)
+
+	engine.Run()
 }

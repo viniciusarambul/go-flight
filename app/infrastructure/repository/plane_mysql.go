@@ -1,43 +1,26 @@
 package repository
 
 import (
-	"database/sql"
-	"fmt"
-
 	"github.com/viniciusarambul/go-flight/app/entity"
+	"gorm.io/gorm"
 )
 
 type PlaneMySQLRepository struct {
-	Db *sql.DB
+	DB *gorm.DB
 }
 
-func (p PlaneMySQLRepository) Insert(plane entity.Plane) error {
-	stmt, err := p.Db.Prepare(`Insert into planes(id, model, desription, status) values (?,?,?,?)`)
-	if err != nil {
-		return err
-	}
+func (p *PlaneMySQLRepository) Find(id int) (entity.Plane, error) {
+	var plane entity.Plane
+	err := p.DB.First(&plane, id)
 
-	_, err = stmt.Exec(
-		plane.ID,
-		plane.Model,
-		plane.Description,
-		plane.Status,
-	)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return plane, err.Error
 }
 
-func (p PlaneMySQLRepository) Select(plane entity.Plane) error {
-	fmt.Sprintln("dentro do select: ")
-	err := p.Db.QueryRow("select id, model, description, status from planes").Scan(&plane.ID, &plane.Model, &plane.Description, &plane.Status)
+func (p *PlaneMySQLRepository) Create(plane *entity.Plane) error {
+	err := p.DB.Create(&plane)
+	return err.Error
+}
 
-	if err != nil {
-		return err
-	}
-
-	return nil
-
+func NewPlaneMySQLRepository(DB *gorm.DB) entity.PlaneRepository {
+	return &PlaneMySQLRepository{DB}
 }
