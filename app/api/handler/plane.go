@@ -12,14 +12,14 @@ type PlaneHandler struct {
 	PlaneUseCase entity.PlaneUseCase
 }
 
-func (planeHundler PlaneHandler) Find(context *gin.Context) {
+func (planeHundler PlaneHandler) FindById(context *gin.Context) {
 	ID, err := strconv.Atoi(context.Param("planeId"))
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid plane ID"})
 		return
 	}
 
-	plane, err := planeHundler.PlaneUseCase.Find(ID)
+	plane, err := planeHundler.PlaneUseCase.FindById(ID)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Plane not found"})
 		return
@@ -46,7 +46,7 @@ func (planeHandler PlaneHandler) Create(context *gin.Context) {
 
 func NewPlaneHandler(engine *gin.Engine, PlaneUseCase entity.PlaneUseCase) entity.PlaneHandler {
 	handler := &PlaneHandler{PlaneUseCase}
-	engine.GET("/plane/:planeId", handler.Find)
+	engine.GET("/plane/:planeId", handler.FindById)
 	engine.POST("/plane", handler.Create)
 	return handler
 }

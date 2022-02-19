@@ -7,6 +7,7 @@ import (
 	"github.com/viniciusarambul/go-flight/app/api/handler"
 	"github.com/viniciusarambul/go-flight/app/api/presenter"
 	"github.com/viniciusarambul/go-flight/app/infrastructure/repository"
+	"github.com/viniciusarambul/go-flight/app/usecase/pilot"
 	"github.com/viniciusarambul/go-flight/app/usecase/plane"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -29,6 +30,12 @@ func main() {
 	planeUseCase := plane.NewPlaneUseCase(planeRepository, planePresenter)
 
 	handler.NewPlaneHandler(engine, planeUseCase)
+
+	pilotRepository := repository.NewPilotMySQLRepository(db)
+	pilotPresenter := presenter.NewPilotPresenter()
+	pilotUseCase := pilot.NewPilotUseCase(pilotRepository, pilotPresenter)
+
+	handler.NewPilotHandler(engine, pilotUseCase)
 
 	engine.Run()
 }

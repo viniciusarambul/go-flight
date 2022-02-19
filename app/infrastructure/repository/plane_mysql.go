@@ -9,7 +9,7 @@ type PlaneMySQLRepository struct {
 	DB *gorm.DB
 }
 
-func (p *PlaneMySQLRepository) Find(id int) (entity.Plane, error) {
+func (p *PlaneMySQLRepository) FindById(id int) (entity.Plane, error) {
 	var plane entity.Plane
 	err := p.DB.First(&plane, id)
 

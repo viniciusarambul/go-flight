@@ -24,17 +24,17 @@ type (
 
 	PlaneRepository interface {
 		Create(plane *Plane) error
-		Find(id int) (Plane, error)
+		FindById(id int) (Plane, error)
 	}
 
 	PlaneUseCase interface {
 		Create(plane PlaneInput) (Plane, error)
-		Find(id int) (PlaneOutput, error)
+		FindById(id int) (PlaneOutput, error)
 	}
 
 	PlaneHandler interface {
 		Create(context *gin.Context)
-		Find(context *gin.Context)
+		FindById(context *gin.Context)
 	}
 
 	PlanePresenter interface {

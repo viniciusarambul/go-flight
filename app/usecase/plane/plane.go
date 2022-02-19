@@ -17,8 +17,8 @@ func (planeUseCase *PlaneUseCase) Create(planeInput entity.PlaneInput) (entity.P
 	return plane, err
 }
 
-func (planeUseCase *PlaneUseCase) Find(id int) (entity.PlaneOutput, error) {
-	plane, err := planeUseCase.planeRepository.Find(id)
+func (planeUseCase *PlaneUseCase) FindById(id int) (entity.PlaneOutput, error) {
+	plane, err := planeUseCase.planeRepository.FindById(id)
 	output := planeUseCase.planePresenter.Output(plane)
 	return output, err
 }
